@@ -1,3 +1,6 @@
+# Streamlit stuff:
+.streamlit/secrets.toml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -77,6 +80,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+quick_scripts.ipynb
 
 # IPython
 profile_default/
