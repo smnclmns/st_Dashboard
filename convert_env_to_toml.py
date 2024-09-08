@@ -11,11 +11,9 @@ os.makedirs('.streamlit', exist_ok=True)
 # Erstelle eine Dictionary-Struktur für die .toml-Datei
 env_keys = ["SPREADSHEET", "WORKSHEET", "TYPE", "PROJECT_ID", "PRIVATE_KEY_ID", "PRIVATE_KEY", "CLIENT_EMAIL", "CLIENT_ID", "AUTH_URI", "TOKEN_URI", "AUTH_PROVIDER_X509_CERT_URL", "CLIENT_X509_CERT_URL"]
 
-print(f"{os.environ.keys()}")
-
 for key in env_keys:
     value = os.environ.get(key)
-    print(f"{key} = {value}")  # Debugging: Ausgeben der geladenen Variablen
+    # print(f"{key} = {value}")  # Debugging: Ausgeben der geladenen Variablen
     if value is None:
         raise ValueError(f"Environment variable {key} is not set.")
 
