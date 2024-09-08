@@ -1,9 +1,9 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import toml
 
 # .env-Datei laden
-load_dotenv()
+# load_dotenv()
 
 # Erstelle das .streamlit-Verzeichnis, falls es nicht existiert
 os.makedirs('.streamlit', exist_ok=True)
@@ -14,7 +14,7 @@ env_keys = ["SPREADSHEET", "WORKSHEET", "TYPE", "PROJECT_ID", "PRIVATE_KEY_ID", 
 print(f"{os.environ.keys()}")
 
 for key in env_keys:
-    value = os.getenv(key)
+    value = os.environ.get(key)
     print(f"{key} = {value}")  # Debugging: Ausgeben der geladenen Variablen
     if value is None:
         raise ValueError(f"Environment variable {key} is not set.")
