@@ -55,6 +55,7 @@ sqlparse==0.5.1
 st-gsheets-connection==0.1.0
 streamlit==1.38.0
 streamlit-authenticator==0.3.3
+streamlit-calendar==1.2.0
 tenacity==8.5.0
 toml==0.10.2
 tornado==6.4.1
