@@ -1,9 +1,9 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import toml
 
 # .env-Datei laden
-load_dotenv()
+# load_dotenv()
 
 # Erstelle das .streamlit-Verzeichnis, falls es nicht existiert
 os.makedirs('.streamlit', exist_ok=True)
