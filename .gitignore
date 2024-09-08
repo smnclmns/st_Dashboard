@@ -1,3 +1,6 @@
+# Render.com Deployment
+.env
+
 # Streamlit stuff:
 .streamlit/secrets.toml
 
