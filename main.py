@@ -1,20 +1,14 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
+from custom_moduls.Connection_handling import Connection_Handler
 
 # Create a connection object
 conn = st.connection("gsheets", GSheetsConnection)
-members_df = conn.read(worksheet="Mitglieder")
-members_df["WhatsApp-Nr."] = members_df["WhatsApp-Nr."].astype(int).astype(str)
+ch = Connection_Handler(conn)
 
 # --- User Authentication ---
-_insidecredentials = {}
-for username in members_df["Username"].tolist():
-    _insidecredentials[username] = {
-        "name": members_df[members_df["Username"] == username]["Name"].values[0],
-        "password": members_df[members_df["Username"] == username]["Passwort"].values[0]
-    }
-credentials = dict(usernames=_insidecredentials)
+credentials = ch.get_credentials()
 
 authenticator = stauth.Authenticate(credentials, "TamamTisch", "bankenkratzenanwolken", 1, auto_hash=False)
 
@@ -30,6 +24,6 @@ elif st.session_state["authentication_status"]:
     authenticator.logout(location="sidebar")
     st.success(f"Willkommen {st.session_state['name']}")
 
-    st.dataframe(members_df.drop(columns="Passwort"))
+    st.dataframe(ch.members_df.drop(columns="Passwort"))
 
     calender_file = st.file_uploader("Datei hochladen")
