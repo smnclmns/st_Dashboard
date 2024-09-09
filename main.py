@@ -1,7 +1,19 @@
 import streamlit as st
+
+from streamlit_calendar import calendar
 from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
+
 from custom_moduls.Connection_handling import Connection_Handler
+from custom_moduls.calender_widget import get_calender_options, get_calender_events, get_custom_css
+
+# Set page configs
+st.set_page_config(
+    page_title="TamamTisch",
+    page_icon=":100:",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
 # Create a connection object
 conn = st.connection("gsheets", GSheetsConnection)
@@ -24,6 +36,18 @@ elif st.session_state["authentication_status"]:
     authenticator.logout(location="sidebar")
     st.success(f"Willkommen {st.session_state['name']}")
 
-    st.dataframe(ch.members_df.drop(columns="Passwort"))
+    # ----- Main App Content -----
 
-    calender_file = st.file_uploader("Datei hochladen")
+    # --- Calender ---
+
+    calender_events = get_calender_events()
+    calender_options = get_calender_options()
+    calender_css = get_custom_css()
+    
+    calendar_instance = calendar(
+        events=calender_events,
+        options=calender_options,
+        custom_css=calender_css,
+    )
+
+    st.write(calendar_instance)
