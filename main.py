@@ -45,7 +45,6 @@ elif st.session_state["authentication_status"]:
 
     # ----- Main App Content -----
 
-    st.dataframe(members_df)
     st.link_button("Google Sheet", os.getenv("SPREADSHEET"))
 
     # --- Calender ---
