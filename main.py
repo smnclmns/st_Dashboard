@@ -52,13 +52,5 @@ elif st.session_state["authentication_status"]:
     events = get_tamam_member_calender_events(members_df=members_df)
     groups = get_groups_from_members_df(members_df=members_df)
 
-    pkg_path = r"venv\Lib\site-packages\streamlit_timeline\__init__.py"
-    root_dir = os.path.abspath(os.path.join(pkg_path, "..", "..", "..", ".."))
-
-    style_path = os.path.join("static", "styles.css")
-
-    print(root_dir)
-    print(style_path)
-
-    timeline = st_timeline(events, groups=groups, options=get_timeline_options(), style=style_path, height="300px")
+    timeline = st_timeline(events, groups=groups, options=get_timeline_options(), height="300px")
     
