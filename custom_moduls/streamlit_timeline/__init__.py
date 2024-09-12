@@ -68,7 +68,8 @@ def _import_styles(style, release=True):
         shutil.copyfile(html_path, html_backup)
 
     if style is None:
-        shutil.copyfile(html_backup, html_path)
+        # shutil.copyfile(html_backup, html_path)
+        print("No style provided")
 
     else:
         if isinstance(style, str):
