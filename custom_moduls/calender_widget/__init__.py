@@ -40,7 +40,6 @@ def get_calender_from_url(url: str) -> Calendar:
     
     ics_response = requests.get(url)
     ics_response.raise_for_status()
-    print(ics_response.text)
     return Calendar(ics_response.text)
 
 def _get_name_html(member: str, event_name: str) -> str:
