@@ -1,11 +1,17 @@
 import streamlit as st
 
-from streamlit_calendar import calendar
 from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
+from streamlit_timeline import st_timeline
+
+from dotenv import load_dotenv
+import os
 
 from custom_moduls.Connection_handling import Connection_Handler
-from custom_moduls.calender_widget import get_calender_options, get_calender_events, get_custom_css
+from custom_moduls.calender_widget import get_tamam_member_calender_events, get_groups_from_members_df, get_timeline_options
+
+# Load environment variables
+load_dotenv()
 
 # Set page configs
 st.set_page_config(
@@ -18,6 +24,7 @@ st.set_page_config(
 # Create a connection object
 conn = st.connection("gsheets", GSheetsConnection)
 ch = Connection_Handler(conn)
+members_df = ch.get_members_worksheet()
 
 # --- User Authentication ---
 credentials = ch.get_credentials()
@@ -38,16 +45,16 @@ elif st.session_state["authentication_status"]:
 
     # ----- Main App Content -----
 
+    st.dataframe(members_df)
+    st.link_button("Google Sheet", os.getenv("SPREADSHEET"))
+
     # --- Calender ---
-
-    calender_events = get_calender_events()
-    calender_options = get_calender_options()
-    calender_css = get_custom_css()
     
-    calendar_instance = calendar(
-        events=calender_events,
-        options=calender_options,
-        custom_css=calender_css,
-    )
+    events = get_tamam_member_calender_events(members_df=members_df)
+    groups = get_groups_from_members_df(members_df=members_df)
 
-    st.write(calendar_instance)
+    timeline = st_timeline(events, groups=groups, options=get_timeline_options(), height="300px")
+    st.subheader("Selected Items")
+    st.write(events)
+    
+    
