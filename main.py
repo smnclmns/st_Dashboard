@@ -45,7 +45,9 @@ elif st.session_state["authentication_status"]:
 
     # ----- Main App Content -----
 
-    st.link_button("Google Sheet", os.getenv("SPREADSHEET"))
+    sheet_url = os.getenv("SPREADSHEET")
+
+    st.link_button("Google Sheet", sheet_url)
 
     # --- Calender ---
     
