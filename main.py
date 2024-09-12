@@ -53,7 +53,4 @@ elif st.session_state["authentication_status"]:
     groups = get_groups_from_members_df(members_df=members_df)
 
     timeline = st_timeline(events, groups=groups, options=get_timeline_options(), height="300px")
-    st.subheader("Selected Items")
-    st.write(events)
-    
     
