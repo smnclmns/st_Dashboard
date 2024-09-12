@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
 from streamlit_timeline import st_timeline
@@ -13,9 +12,6 @@ from custom_moduls.calender_widget import get_tamam_member_calender_events, get_
 
 # Load environment variables
 load_dotenv()
-
-# Setze den Cache-Pfad an eine schreibbare Stelle, z.B. ein temporäres Verzeichnis
-os.environ['ST_TIMELINE_CACHE_DIR'] = '/tmp/streamlit_timeline_cache'
 
 # Set page configs
 st.set_page_config(
@@ -56,5 +52,5 @@ elif st.session_state["authentication_status"]:
     events = get_tamam_member_calender_events(members_df=members_df)
     groups = get_groups_from_members_df(members_df=members_df)
 
-    timeline = st_timeline(events, groups=groups, options=get_timeline_options(), height="300px")
+    timeline = st_timeline(events, groups=groups, options=get_timeline_options(), styles="", height="300px")
     
