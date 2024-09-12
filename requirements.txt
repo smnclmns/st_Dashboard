@@ -78,7 +78,6 @@ stack-data==0.6.3
 streamlit==1.38.0
 streamlit-authenticator==0.3.3
 streamlit-calendar==1.2.0
-streamlit-vis-timeline==0.3.0
 TatSu==5.12.1
 tenacity==8.5.0
 toml==0.10.2
