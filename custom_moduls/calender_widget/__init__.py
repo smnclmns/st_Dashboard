@@ -16,10 +16,11 @@ def get_timeline_options():
 def get_groups_from_members_df(members_df: pd.DataFrame) -> list[dict]:
     groups = []
     for name in members_df["Name"].values:
+        firstname = name.split(" ")[0]
         groups.append({
-            'id': name,
-            'content': name,
-            'title': name,
+            'id': firstname,
+            'content': firstname,
+            'title': firstname,
         })
     return groups
 
@@ -45,8 +46,6 @@ def get_calender_from_url(url: str) -> Calendar:
 def _get_name_html(member: str, event_name: str) -> str:
     html_tag = f'''
     <div style="
-    border: 1px solid #ccc;
-    padding: 10px;
     width: 100%;
     font-family: Arial, sans-serif;">
         <div style="font-size: 9px; font-weight: bold; color: #555; margin-bottom: 5px; text-align: left;">
@@ -59,28 +58,56 @@ def _get_name_html(member: str, event_name: str) -> str:
     '''
     return html_tag
 
+def get_title_html(event_name: str, member: str, start: str, end: str, location: str) -> str:
+    html_tag = f'''
+    <div style="
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    font-family: Arial, sans-serif;">
+        <div style="font-size: 9px; font-weight: bold; color: #555; margin-bottom: 5px; text-align: left;">
+            {member}
+        </div>
+        <div style="font-size: 12px; font-weight: normal; color: #000; text-align: center;">
+            {event_name}
+        </div>
+        <div style="font-size: 9px; font-weight: normal; color: #555; text-align: left;">
+            {start.split("T")[0]}: {start.split("T")[1][:5]} - {end.split("T")[1][:5]}
+        </div>
+        <div style="font-size: 9px; font-weight: normal; color: #555; text-align: left;">
+            {location if location else "No location"}
+        </div>
+    </div>
+    '''
+    return html_tag
+
+
 def _extract_calender_events(member: str, cal: Calendar) -> list[dict]:
     events = []
     for i, event in enumerate(cal.events):
         # Convert Arrow-Objects in ISO 8601-Strings
         start = event.begin.isoformat()
         end = event.end.isoformat()
-        name = _get_name_html(member, event.name)
+        content = _get_name_html(member, event.name)
+        title = get_title_html(event.name, member, start, end, event.location)
 
         style = ""
 
-        if event.description == "Tamam":
-            style += "border-color: gold; background-color: gold;"
+        if event.description:
+            if event.description == "Tamam":
+                style += "border-color: gold; background-color: gold;"
+            elif "Reclaim" in event.description:
+                style += "border-color: green; background-color: green;"
         else:
             style += "border-color: grey; background-color: grey;"
         
         events.append({
             'id': i,
-            'content': name,
+            'content': content,
             'start': start,
             'end': end,
-            'group': member,
-            'title': f"{event.name}, {member.split(' ')[0]}",
+            'group': member.split(' ')[0],
+            'title': title,
             'style': style,
         })
     return events
