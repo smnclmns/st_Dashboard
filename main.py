@@ -2,7 +2,7 @@ import streamlit as st
 
 from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
-from streamlit_timeline import st_timeline
+from custom_moduls.streamlit_timeline import st_timeline
 
 from dotenv import load_dotenv
 import os
