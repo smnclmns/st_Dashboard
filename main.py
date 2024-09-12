@@ -55,7 +55,7 @@ elif st.session_state["authentication_status"]:
     pkg_path = r"venv\Lib\site-packages\streamlit_timeline\__init__.py"
     root_dir = os.path.abspath(os.path.join(pkg_path, "..", "..", "..", ".."))
 
-    style_path = os.path.join(root_dir, "static", "styles.css")
+    style_path = os.path.join("static", "styles.css")
 
     print(root_dir)
     print(style_path)
