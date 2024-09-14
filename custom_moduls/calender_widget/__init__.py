@@ -10,6 +10,7 @@ def get_timeline_options():
     options = {
         'max': five_years_later,
         'min': one_year_ago,
+        'locale': 'de',
     }
     return options
 
@@ -85,6 +86,11 @@ def get_title_html(event_name: str, member: str, start: str, end: str, location:
 def _extract_calender_events(member: str, cal: Calendar) -> list[dict]:
     events = []
     for i, event in enumerate(cal.events):
+        
+        # Shift time by 2 hours -> GMT+2
+        event.end = event.end.shift(hours=2)
+        event.begin = event.begin.shift(hours=2)
+
         # Convert Arrow-Objects in ISO 8601-Strings
         start = event.begin.isoformat()
         end = event.end.isoformat()
