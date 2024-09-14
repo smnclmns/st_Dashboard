@@ -1,9 +1,10 @@
+import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
 
 class Connection_Handler():
-    def __init__(self, conn: GSheetsConnection):
-        self.conn = conn
+    def __init__(self):
+        self.conn = st.connection("gsheets", GSheetsConnection)
         self.members_df = self.get_members_worksheet()
 
     def get_members_worksheet(self):

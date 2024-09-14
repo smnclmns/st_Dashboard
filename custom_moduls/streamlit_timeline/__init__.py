@@ -3,83 +3,16 @@ import os
 import streamlit as st
 import streamlit.components.v1 as components
 
-# Create a _RELEASE constant. We'll set this to False while we're developing
-# the component, and True when we're ready to package and distribute it.
-# (This is, of course, optional - there are innumerable ways to manage your
-# release process.)
-_RELEASE = False
-
 # Declare a Streamlit component. `declare_component` returns a function
 # that is used to create instances of the component. We're naming this
 # function "_component_func", with an underscore prefix, because we don't want
 # to expose it directly to users. Instead, we will create a custom wrapper
 # function, below, that will serve as our component's public API.
 
-# It's worth noting that this call to `declare_component` is the
-# *only thing* you need to do to create the binding between Streamlit and
-# your component frontend. Everything else we do in this file is simply a
-# best practice.
-
-if not _RELEASE:
-    _component_func = components.declare_component(
-        # We give the component a simple, descriptive name ("my_component"
-        # does not fit this bill, so please choose something better for your
-        # own component :)
-        "my_component",
-        # Pass `url` here to tell Streamlit that the component will be served
-        # by the local dev server that you run via `npm run start`.
-        # (This is useful while your component is in development.)
-        url="http://localhost:3001",
-    )
-else:
-    # When we're distributing a production version of the component, we'll
-    # replace the `url` param with `path`, and point it to to the component's
-    # build directory:
-    parent_dir = os.path.dirname(os.path.abspath(__file__))
-    build_dir = os.path.join(parent_dir, "frontend/build")
-    _component_func = components.declare_component(
-        "st_timeline", path=build_dir)
-
-
-@st.cache_data
-def _import_styles(style, release=_RELEASE):
-    """Import styles from the frontend's build directory."""
-
-    parent_dir = os.path.dirname(os.path.abspath(__file__))
-    build_dir = os.path.join(parent_dir, "frontend/build")
-    html_path = os.path.join(build_dir, "index.html")
-    style_path = os.path.join(build_dir, "static/css/styles.css")
-    html_backup = os.path.join(build_dir, "index_bk.html")
-    if not os.path.exists(html_backup):
-        # shutil.copyfile(html_path, html_backup)
-        print("Backup created")
-
-    if style is None:
-        # shutil.copyfile(html_backup, html_path)
-        print("No style provided")
-
-    else:
-        if isinstance(style, str):
-            if os.path.exists(style):
-                # shutil.copyfile(style, style_path)
-                print("Style copied")
-            else:
-                with open(style_path, "w") as f:
-                    f.write(style)
-        else:
-            raise TypeError("style must be a string or a path to a css file.")
-
-        with open(html_path, "r") as f:
-            content = f.read()
-
-        if "styles.css" not in content:
-            with open(html_path, "w") as f:
-                f.write(
-                    content.replace(
-                        '<link rel="stylesheet" href="bootstrap.min.css"/>',
-                        '<link rel="stylesheet" href="bootstrap.min.css"/><link rel="stylesheet" href="./static/css/styles.css"/>',
-                    )
-                )
+parent_dir = os.path.dirname(os.path.abspath(__file__))
+build_dir = os.path.join(parent_dir, "frontend/build")
+_component_func = components.declare_component(
+    "st_timeline", path=build_dir)
 
 
 # Create a wrapper function for the component. This is an optional
@@ -111,8 +44,6 @@ def st_timeline(
     #
     # "default" is a special argument that specifies the initial return
     # value of the component before the user has interacted with it.
-
-    _import_styles(style, _RELEASE)
 
     if options is None:
         options = {
@@ -167,72 +98,3 @@ def st_timeline(
         for item in items:
             if item["id"] == component_value:
                 return item
-
-
-# Add some test code to play with the component while it's in development.
-# During development, we can run this just as we would any other Streamlit
-# app: `$ streamlit run my_component/__init__.py`
-if not _RELEASE and __name__ == "__main__":
-    import streamlit as st
-
-    st.set_page_config(layout="wide")
-
-    st.title("Streamlit Timeline Component")
-    st.subheader("Bidirectional communication")
-
-    # Create an instance of our component with a constant `name` arg, and
-    # print its output value.
-
-    groups = [
-        {"id": 1, "content": "A", "nestedGroups": [2, 3]},
-        {"id": 2, "content": "A-01", "height": "120px"},
-        {"id": 3, "content": "B", "height": "120px"},
-    ]
-
-    items = [
-        {
-            "id": 1,
-            "start": "2011-07-15",
-            "end": "2011-07-15",
-            "content": "2011-07-15",
-            "group": 3,
-            "type": "point",
-        },
-        {
-            "id": 2,
-            "start": "2012-07-20",
-            "end": "2012-08-02",
-            "content": "2012-07-20",
-            "group": 2,
-            "type": "point",
-        },
-        {
-            "id": 3,
-            "start": "2013-07-02",
-            "end": "2013-08-02",
-            "content": "2013-08-02",
-            "group": 2,
-            "type": "point",
-        },
-        {
-            "id": 4,
-            "start": "2014-07-02",
-            "end": "2014-08-02",
-            "content": "2014-08-02",
-            "group": 2,
-            "type": "point",
-        },
-    ]
-
-    items = [
-        {"id": 1, "content": "2014-04-20", "start": "2014-04-20", "selectable": True},
-        {"id": 2, "content": "2014-04-14", "start": "2014-04-14"},
-        {"id": 3, "content": "2014-04-18", "start": "2014-04-18"},
-        {"id": 4, "content": "2014-04-16", "start": "2014-04-16"},
-        {"id": 5, "content": "2014-04-25", "start": "2014-04-25"},
-        {"id": 6, "content": "2014-04-27", "start": "2014-04-27"},
-    ]
-
-    timeline = st_timeline(items, groups=[], options={},
-                           style=None, height="300px")
-    st.write(timeline)

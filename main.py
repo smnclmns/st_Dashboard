@@ -1,6 +1,5 @@
 import streamlit as st
 
-from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
 from custom_moduls.streamlit_timeline import st_timeline
 
@@ -22,8 +21,7 @@ st.set_page_config(
 )
 
 # Create a connection object
-conn = st.connection("gsheets", GSheetsConnection)
-ch = Connection_Handler(conn)
+ch = Connection_Handler()
 members_df = ch.get_members_worksheet()
 
 # --- User Authentication ---
@@ -52,5 +50,5 @@ elif st.session_state["authentication_status"]:
     events = get_tamam_member_calender_events(members_df=members_df)
     groups = get_groups_from_members_df(members_df=members_df)
 
-    timeline = st_timeline(events, groups=groups, options=get_timeline_options(), height="300px")
+    st_timeline(events, groups=groups, options=get_timeline_options(), height="300px")
     
