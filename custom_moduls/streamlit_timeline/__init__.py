@@ -42,30 +42,17 @@ else:
 
 
 @st.cache_data
-def _import_styles(style, release=True):
+def _import_styles(style, release=_RELEASE):
     """Import styles from the frontend's build directory."""
 
-    import shutil
-    import pkg_resources
-
-    if release:
-        try:
-            parent_dir = os.path.dirname(
-                pkg_resources.resource_filename(
-                    "streamlit_timeline", "__init__.py")
-            )
-        except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(e)
-        except Exception as e:
-            raise Exception(e)
-    else:
-        parent_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(os.path.abspath(__file__))
     build_dir = os.path.join(parent_dir, "frontend/build")
     html_path = os.path.join(build_dir, "index.html")
     style_path = os.path.join(build_dir, "static/css/styles.css")
     html_backup = os.path.join(build_dir, "index_bk.html")
     if not os.path.exists(html_backup):
-        shutil.copyfile(html_path, html_backup)
+        # shutil.copyfile(html_path, html_backup)
+        print("Backup created")
 
     if style is None:
         # shutil.copyfile(html_backup, html_path)
@@ -74,7 +61,8 @@ def _import_styles(style, release=True):
     else:
         if isinstance(style, str):
             if os.path.exists(style):
-                shutil.copyfile(style, style_path)
+                # shutil.copyfile(style, style_path)
+                print("Style copied")
             else:
                 with open(style_path, "w") as f:
                     f.write(style)
@@ -124,7 +112,7 @@ def st_timeline(
     # "default" is a special argument that specifies the initial return
     # value of the component before the user has interacted with it.
 
-    _import_styles(style, True)
+    _import_styles(style, _RELEASE)
 
     if options is None:
         options = {
