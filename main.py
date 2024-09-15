@@ -51,6 +51,7 @@ elif st.session_state["authentication_status"]:
     # Option variables
     # TODO: Make these variables user-configurable to dynamically change the timeline
     months_ahead = 18
+    tl_height = "600px"
 
     st_timeline(
         items=events,
@@ -58,6 +59,6 @@ elif st.session_state["authentication_status"]:
         options=get_timeline_options(
             months_ahead=months_ahead,
         ),
-        height="600px",
+        height=tl_height,
     )
     
