@@ -6,11 +6,6 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
 import pandas as pd
-from dotenv import load_dotenv
-import os
-
-# load environment variables
-load_dotenv()
 
 # Connection_Handler class
 
@@ -20,7 +15,7 @@ class Connection_Handler():
         self.conn = st.connection("gsheets", GSheetsConnection)
         self.members_df = self.get_members_worksheet()
         self.credentials = self.get_credentials()
-        self.spreadsheet_url = os.getenv("SPREADSHEET")
+        self.spreadsheet_url = self.get_spreadsheet_url()
 
     def get_members_worksheet(self) -> pd.DataFrame:
         '''
@@ -42,8 +37,8 @@ class Connection_Handler():
             }
         return dict(usernames=_insidecredentials)
     
-    def redirect_to_google_sheet(self):
+    def get_spreadsheet_url(self) -> str:
         '''
-        Redirects the user to the google sheet.
+        Returns the spreadsheet url.
         '''
-        st.write(f'<a href="{self.spreadsheet_url}" target="_blank">Google Sheet</a>', unsafe_allow_html=True)
+        return self.members_df["Spreadsheet"].values[0]
