@@ -1,6 +1,7 @@
 # Description: This module contains functions to extract events from ICS-URLs and create a timeline widget for Streamlit.
 
 # Imported Moduls:
+import streamlit as st # For Streamlit-Caching
 import requests # For HTTP-Requests
 import pytz # For Timezone-Handling
 import pandas as pd # For Data-Handling
@@ -8,7 +9,6 @@ import pandas as pd # For Data-Handling
 from ics import Calendar # For ICS-Handling
 from datetime import datetime # For Date-Handling
 from jinja2 import Template # For HTML-Template-Rendering
-import streamlit as st # For Streamlit-Caching
 
 # imported functions
 from time import sleep # For time delays (stabilizing due to network issues)
