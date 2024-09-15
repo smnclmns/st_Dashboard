@@ -42,7 +42,7 @@ elif st.session_state["authentication_status"]:
     # ----- Main App Content -----
 
     # st.link_button("Google Sheet", os.getenv("SPREADSHEET"))
-    st.markdown(f'<a href="{os.getenv("SPREADSHEET")}" >Google Sheet</a>', unsafe_allow_html=True)
+    st.html(f'<a href="{os.getenv("SPREADSHEET")}" target="_blank">Google Sheet</a>')
 
     # --- Calender ---
     
