@@ -2,6 +2,7 @@ import requests
 from ics import Calendar
 import pandas as pd
 from datetime import datetime
+from time import sleep
 
 def get_timeline_options():
     current_date = f"{datetime.now().isoformat()}"
@@ -39,10 +40,19 @@ def get_calender_from_url(url: str) -> Calendar:
 
     if not isinstance(url, str):
         return None
-    
-    ics_response = requests.get(url)
-    ics_response.raise_for_status()
-    return Calendar(ics_response.text)
+
+    for attempts in range(3):
+
+        ics_response = requests.get(url)
+        ics_response.raise_for_status()
+
+        try:
+            cal = Calendar(ics_response.text)
+        except Exception as e:
+            print(f"Error: {e}")
+            sleep(0.5)
+            continue
+    return cal
 
 def _get_name_html(member: str, event_name: str) -> str:
     html_tag = f'''
