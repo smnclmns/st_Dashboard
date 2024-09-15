@@ -3,14 +3,8 @@ import streamlit as st
 import streamlit_authenticator as stauth
 from custom_moduls.streamlit_timeline import st_timeline
 
-from dotenv import load_dotenv
-import os
-
 from custom_moduls.Connection_handling import Connection_Handler
 from custom_moduls.calender_widget import get_tamam_member_calender_events, get_groups_from_members_df, get_timeline_options
-
-# Load environment variables
-load_dotenv()
 
 # Set page configs
 st.set_page_config(
