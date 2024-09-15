@@ -15,7 +15,7 @@ class Connection_Handler():
         self.conn = st.connection("gsheets", GSheetsConnection)
         self.members_df = self.get_members_worksheet()
         self.credentials = self.get_credentials()
-        self.spreadsheet_url = self.get_spreadsheet_url()
+        self.spreadsheet_url = "https://docs.google.com/spreadsheets/d/1kio6yj57RyXq9miWRQZ-Y-ujscygOOCOv7EKudkI6P0/edit?gid=0#gid=0"
 
     def get_members_worksheet(self) -> pd.DataFrame:
         '''
@@ -36,9 +36,3 @@ class Connection_Handler():
                 "password": self.members_df[self.members_df["Username"] == username]["Passwort"].values[0]
             }
         return dict(usernames=_insidecredentials)
-    
-    def get_spreadsheet_url(self) -> str:
-        '''
-        Returns the spreadsheet url.
-        '''
-        return self.members_df["Spreadsheet"].values[0]
