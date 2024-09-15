@@ -9,6 +9,19 @@ import streamlit as st
 from time import sleep
 
 def get_timeline_options(**kwargs) -> dict:
+    '''
+    Returns a dictionary with the options for the timeline widget.
+    The options are:
+    - max: The maximum date for the timeline
+    - min: The minimum date for the timeline
+    - locale: The locale for the timeline
+
+    The options can be customized by passing keyword arguments.
+    The following keyword arguments are supported:
+    - months_ahead: The number of months ahead for the maximum date
+    ... and more to come
+    
+    '''
 
     # Get current date and define time range for the timeline
     current_date = f"{datetime.now().isoformat()}"
@@ -18,7 +31,13 @@ def get_timeline_options(**kwargs) -> dict:
         months_ahead = int(kwargs["months_ahead"])
         year_ahead = months_ahead // 12
         months_ahead = months_ahead % 12
-        max_date = f"{datetime.now().replace(year=datetime.now().year+year_ahead, month=datetime.now().month+months_ahead).isoformat()}"
+        # Calculate the maximum date
+        replace_month = datetime.now().month + months_ahead
+        if replace_month > 12:
+            replace_month = replace_month % 12
+            year_ahead += 1
+        replace_year = datetime.now().year + year_ahead
+        max_date = f"{datetime.now().replace(year=replace_year, month=replace_month).isoformat()}"
     else:
         max_date = f"{datetime.now().replace(year=datetime.now().year+1).isoformat()}"     
         

@@ -47,6 +47,17 @@ elif st.session_state["authentication_status"]:
     
     events = get_tamam_member_calender_events(members_df=ch.members_df)
     groups = get_groups_from_members_df(members_df=ch.members_df)
+    
+    # Option variables
+    # TODO: Make these variables user-configurable to dynamically change the timeline
+    months_ahead = 18
 
-    st_timeline(events, groups=groups, options=get_timeline_options(), height="600px")
+    st_timeline(
+        items=events,
+        groups=groups,
+        options=get_timeline_options(
+            months_ahead=months_ahead,
+        ),
+        height="600px",
+    )
     
