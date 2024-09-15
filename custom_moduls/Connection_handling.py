@@ -6,6 +6,11 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import streamlit_authenticator as stauth
 import pandas as pd
+from dotenv import load_dotenv
+import os
+
+# load environment variables
+load_dotenv()
 
 # Connection_Handler class
 
@@ -15,6 +20,7 @@ class Connection_Handler():
         self.conn = st.connection("gsheets", GSheetsConnection)
         self.members_df = self.get_members_worksheet()
         self.credentials = self.get_credentials()
+        self.spreadsheet_url = os.getenv("SPREADSHEET")
 
     def get_members_worksheet(self) -> pd.DataFrame:
         '''
