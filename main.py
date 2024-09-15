@@ -22,12 +22,10 @@ st.set_page_config(
 
 # Create a connection object
 ch = Connection_Handler()
-members_df = ch.get_members_worksheet()
 
 # --- User Authentication ---
-credentials = ch.get_credentials()
 
-authenticator = stauth.Authenticate(credentials, "TamamTisch", "bankenkratzenanwolken", 1, auto_hash=False)
+authenticator = stauth.Authenticate(ch.credentials, "TamamTisch", "bankenkratzenanwolken", 1, auto_hash=False)
 
 authenticator.login()
 
@@ -47,8 +45,8 @@ elif st.session_state["authentication_status"]:
 
     # --- Calender ---
     
-    events = get_tamam_member_calender_events(members_df=members_df)
-    groups = get_groups_from_members_df(members_df=members_df)
+    events = get_tamam_member_calender_events(members_df=ch.members_df)
+    groups = get_groups_from_members_df(members_df=ch.members_df)
 
-    st_timeline(events, groups=groups, options=get_timeline_options(), height="300px")
+    st_timeline(events, groups=groups, options=get_timeline_options(), height="600px")
     
