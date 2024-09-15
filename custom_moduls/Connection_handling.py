@@ -41,3 +41,9 @@ class Connection_Handler():
                 "password": self.members_df[self.members_df["Username"] == username]["Passwort"].values[0]
             }
         return dict(usernames=_insidecredentials)
+    
+    def redirect_to_google_sheet(self):
+        '''
+        Redirects the user to the google sheet.
+        '''
+        st.write(f'<a href="{self.spreadsheet_url}" target="_blank">Google Sheet</a>', unsafe_allow_html=True)
