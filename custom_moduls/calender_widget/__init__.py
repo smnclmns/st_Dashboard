@@ -1,12 +1,19 @@
-import requests
-from ics import Calendar
-import pandas as pd
-from datetime import datetime
-import pytz
-from jinja2 import Template
-import streamlit as st
+# Description: This module contains functions to extract events from ICS-URLs and create a timeline widget for Streamlit.
 
-from time import sleep
+# Imported Moduls:
+import requests # For HTTP-Requests
+import pytz # For Timezone-Handling
+import pandas as pd # For Data-Handling
+
+from ics import Calendar # For ICS-Handling
+from datetime import datetime # For Date-Handling
+from jinja2 import Template # For HTML-Template-Rendering
+import streamlit as st # For Streamlit-Caching
+
+# imported functions
+from time import sleep # For time delays (stabilizing due to network issues)
+
+# Three main functions: get_timeline_options, get_groups_from_members_df, get_tamam_member_calender_events
 
 def get_timeline_options(**kwargs) -> dict:
     '''
@@ -48,7 +55,19 @@ def get_timeline_options(**kwargs) -> dict:
     }
     return options
 
+@st.cache_data(ttl=3600) # Cache for 1 hour
 def get_groups_from_members_df(members_df: pd.DataFrame) -> list[dict]:
+    '''
+    Returns a list of dictionaries with the group information for the timeline widget.
+    The group information is:
+    - id: The id of the group
+    - content: The content of the group
+    - title: The title of the group
+    
+    The group information is extracted from the members dataframe.
+    
+    '''
+
     groups = []
     for name in members_df["Name"].values:
         firstname = name.split(" ")[0]
@@ -61,6 +80,20 @@ def get_groups_from_members_df(members_df: pd.DataFrame) -> list[dict]:
 
 @st.cache_data(ttl=3600) # Cache for 1 hour
 def get_tamam_member_calender_events(members_df: pd.DataFrame) -> list[dict]:
+    '''
+    Returns a list of dictionaries with the event information for the timeline widget.
+    The event information is:
+    - id: The id of the event
+    - content: The content of the event
+    - start: The start date and time of the event
+    - end: The end date and time of the event
+    - group: The group of the event
+    - title: The title of the event
+    - style: The style of the event
+
+    The event information is extracted from the members dataframe.
+
+    '''
 
     events = []
     for name, url in members_df[["Name", "ICS_URL"]].values:
@@ -70,7 +103,18 @@ def get_tamam_member_calender_events(members_df: pd.DataFrame) -> list[dict]:
         events.extend(_extract_calender_events(name, cal))
     return events
 
+
+# -- Helper functions --
+
 def get_calender_from_url(url: str) -> Calendar:
+    '''
+    Returns a Calendar object from the given URL.
+    The URL should be a string.
+    If the URL is not a string, the function returns None.
+    If the URL is not valid, the function raises an exception.
+    If the URL is valid, the function returns a Calendar object.
+
+    '''
 
     if not isinstance(url, str):
         return None
@@ -116,8 +160,21 @@ def _get_title_html(event_name: str, member: str, start: str, end: str, location
         description=des or "No Description",
         )
 
-
 def _extract_calender_events(member: str, cal: Calendar) -> list[dict]:
+    '''
+    Returns a list of dictionaries with the event information for the timeline widget.
+    The event information is:
+    - id: The id of the event
+    - content: The content of the event
+    - start: The start date and time of the event
+    - end: The end date and time of the event
+    - group: The group of the event
+    - title: The title of the event
+    - style: The style of the event
+    
+    The event information is extracted from the calendar object.
+    
+    '''
 
     local_tz = pytz.timezone('Europe/Berlin')
 
