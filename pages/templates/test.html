@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+
+
+{% block content%} 
+
+<br>
+
+<div class="container text-center">
+    <!-- Button trigger modal-->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_ToDo">Add ToDo</button>
+  
+    <!-- Modal -->
+    <div class="modal fade" id="new_ToDo" tabindex="-1" aria-labelledby="new_ToDoLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="new_ToDoLabel">new ToDo</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="post" action="#" enctype="multipart/form-data">
+                <!-- Title Section -->
+              <div class="form-group">
+                <input
+                class="form-control"
+                id="title"
+                name="title"
+                placeholder="Enter title"
+                />
+              </div>
+              <br>
+                <!-- Priority Section -->
+              <select class="form-select" aria-label="Default select example" name="priority" id="priority" type="select">
+                <option selected value="Crucial">Crucial</option>
+                <option value="Advancing">Advancing</option>
+                <option value="Enriching">Enriching</option>
+              </select>
+              <br>
+                <!-- Category Section -->
+              <select class="form-select" aria-label="Default select example" name="category" id="category" type="select">
+                <option selected value="Growth">Growth</option>
+                <option value="Home/Life">Home/Life</option>
+                <option value="Business">Business</option>
+              </select>
+              <br>
+                <!-- Steps Section -->
+              <div id="steps-container" class="form-group">
+                <input
+                class="form-control"
+                id="step_1"
+                name="steps[]"
+                placeholder="Enter first step"
+                oninput="handleInput(this)"
+                onblur="handleBlur()"
+                />
+              </div>
+              <br>
+              <!-- Due Date Section -->
+                <label for="due_date_selections"> Due Date</label>
+              <div id="due_date_selections" class="form-group d-flex justify-content-between">
+                <select class="form-select" id="due_year" name="due_year">
+                    <option value="" selected>Year</option>
+                    {% for year in range(datetime.now().year, datetime.now().year + 11) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-select me-1" id="due_month" name="due_month" onchange="updateDays()">
+                    <option value="" selected>Month</option>
+                    {% for month in range(1, 13) %}
+                    <option value="{{ month }}">{{ month }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-select me-1" id="due_day" name="due_day" >
+                    <option value="" selected>Day</option>
+                </select>
+              </div>
+              <br>
+              <!-- Do Date Section-->
+              <div class="form-group">
+                <label for="do_date_determination"> Do Date</label>
+                <select class="form-select" name="do_date_determination" id="do_date_determination" type="select" onchange="doDateHandling()">
+                    <option value="1">Manual</option>
+                    <option value="2">Automatic</option>
+                </select>
+                <!-- Manual Do Date Input -->
+                <div id="manual_do_date" class="form-group d-flex justify-content-between">
+                  <select class="form-select" id="do_year" name="do_year">
+                    <option value="" selected>Year</option>
+                    {% for year in range(datetime.now().year, datetime.now().year + 11) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                  <select class="form-select me-1" id="do_month" name="do_month" onchange="updateDays()">
+                    <option value="" selected>Month</option>
+                    {% for month in range(1, 13) %}
+                    <option value="{{ month }}">{{ month }}</option>
+                    {% endfor %}
+                  </select>
+                  <select class="form-select me-1" id="do_day" name="do_day" >
+                    <option value="" selected>Day</option>
+                  </select>
+                </div>
+              </div>
+
+              <br>
+                <!--    Collaborators       -->
+
+              <div class="mb-3">
+                <label for="file" class="form-label">Attachements</label>
+                <input class="form-control" type="file" id="file" name="file" multiple>
+              </div>
+              <br />
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+<table class="table table-dark table-hover">
+    <thead>
+        <tr>
+            {% for col in columns %}
+            <th scope="col"> {{col}} </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for todo in todos %}
+        <tr>
+            {% for col in columns %}            
+            <td> {{ getattr(todo, col)}} </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+    function handleInput(input) {
+        const stepsContainer = document.getElementById('steps-container');
+        const inputs = stepsContainer.querySelectorAll('input');
+
+        // Create a new input if the current is not empty and is the last one
+        if (input.value !== '' && inputs[inputs.length - 1] === input) {
+            addNewStep(stepsContainer, inputs.length + 1);
+        }
+
+        // Ensure only one empty input at the end
+        for (let i = 0; i < inputs.length - 1; i++) {
+            if (inputs[i].value === '' && inputs[i + 1].value === '') {
+                stepsContainer.removeChild(inputs[i]);
+                updateStepIds();
+                break; // Only remove one at a time
+            }
+        }
+    }
+
+    function addNewStep(container, index) {
+        const newStep = document.createElement('input');
+        newStep.className = 'form-control';
+        newStep.name = 'steps[]';
+        newStep.id = `step_${index}`;
+        newStep.placeholder = `Enter step ${index}`;
+        newStep.oninput = function () {
+            handleInput(newStep);
+        };
+        newStep.onblur = function () {
+            handleBlur();
+        };
+        container.appendChild(newStep);
+    }
+
+    function updateStepIds() {
+        const inputs = document.querySelectorAll('#steps-container input');
+        inputs.forEach((input, index) => {
+            input.id = `step_${index + 1}`;
+            input.placeholder = `Enter step ${index + 1}`;
+        });
+    }
+
+    function handleBlur() {
+        const stepsContainer = document.getElementById('steps-container');
+        const inputs = stepsContainer.querySelectorAll('input');
+        // Check if there's exactly one empty input at the end
+        const lastInput = inputs[inputs.length - 1];
+        // Ensure there's always one empty input at the end
+        if (lastInput.value !== '') {
+            addNewStep(stepsContainer, inputs.length + 1);
+        } else {
+            // Remove any empty inputs except the last one
+            inputs.forEach((input, index) => {
+                if (input.value === '' && index < inputs.length - 1) {
+                    stepsContainer.removeChild(input);
+                    updateStepIds();
+                }
+            });
+        }
+    }
+
+    // Handle delete input and keep fields updated
+    document.getElementById('steps-container').addEventListener('input', function (event) {
+        const target = event.target;
+        if (target.value === '' && target !== this.lastElementChild) {
+            this.removeChild(target);
+            updateStepIds();
+            // Ensure exactly one empty field at the end
+            handleBlur();
+        }
+    });
+
+    // Update the number of days based on selected month and year
+    function doDateHandling() {
+        const doDateSelect = document.getElementById('do_date_determination');
+        const manualDoDateSection = document.getElementById('manual_do_date');
+
+
+        if (doDateSelect.value === '1') {
+            // Show manual input fields
+            manualDoDateSection.innerHTML= `
+                <select class="form-select" id="do_year" name="do_year">
+                    <option value="" selected>Year</option>
+                    {% for year in range(datetime.now().year, datetime.now().year + 11) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-select me-1" id="do_month" name="do_month" onchange="updateDays()">
+                    <option value="" selected>Month</option>
+                    {% for month in range(1, 13) %}
+                    <option value="{{ month }}">{{ month }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-select me-1" id="do_day" name="do_day" >
+                    <option value="" selected>Day</option>
+                </select>
+            `;
+        } else {
+            // Hide manual input fields
+            manualDoDateSection.innerHTML = '';
+        }
+    }
+
+    function updateDays() {
+        const dueYear = parseInt(document.getElementById('due_year').value);
+        const dueMonth = parseInt(document.getElementById('due_month').value);
+        const doYear = parseInt(document.getElementById('do_year')?.value);
+        const doMonth = parseInt(document.getElementById('do_month')?.value);
+
+        updateDayOptions(dueYear, dueMonth, 'due_day');
+        updateDayOptions(doYear, doMonth, 'do_day');
+    }
+
+    function updateDayOptions(year, month, daySelectId) {
+        const daySelect = document.getElementById(daySelectId);
+        daySelect.innerHTML = '<option value="" selected>Day</option>'; // Clear current days
+
+        if (!year || !month) return; // Exit if no valid year or month
+
+        const daysInMonth = new Date(year, month, 0).getDate(); // Days in the selected month/year
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const option = document.createElement('option');
+            option.value = day;
+            option.textContent = day;
+            daySelect.appendChild(option);
+        }
+    }
+</script>
+
+{% endblock %}

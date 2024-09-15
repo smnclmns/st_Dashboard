@@ -3,7 +3,7 @@ import streamlit as st
 import streamlit_authenticator as stauth
 from custom_moduls.streamlit_timeline import st_timeline
 
-from custom_moduls.Connection_handling import Connection_Handler
+from custom_moduls.Connection_handling import ch
 from custom_moduls.calender_widget import get_tamam_member_calender_events, get_groups_from_members_df, get_timeline_options
 
 # Set page configs
@@ -13,9 +13,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-
-# Create a connection object
-ch = Connection_Handler()
 
 # --- User Authentication ---
 

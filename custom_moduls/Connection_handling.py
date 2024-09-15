@@ -36,3 +36,5 @@ class Connection_Handler():
                 "password": self.members_df[self.members_df["Username"] == username]["Passwort"].values[0]
             }
         return dict(usernames=_insidecredentials)
+    
+ch = Connection_Handler()
