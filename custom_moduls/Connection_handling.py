@@ -9,7 +9,7 @@ import pandas as pd
 
 # Connection_Handler class
 
-# @st.cache_resource(ttl=3600) # Cache for 1 hour
+@st.cache_resource(ttl=3600) # Cache for 1 hour
 class Connection_Handler():
     def __init__(self):
         self.conn = st.connection("gsheets", GSheetsConnection)

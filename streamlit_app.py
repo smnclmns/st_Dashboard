@@ -1,7 +1,14 @@
 import streamlit as st
 from custom_moduls.Connection_handling import Connection_Handler
 
-ch = Connection_Handler()
+st.set_page_config(
+    page_title="TamamTisch",
+    page_icon=":100:",
+    layout="wide",
+)
+
+if "ch" not in st.session_state:
+    st.session_state.ch = Connection_Handler()
 
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -18,12 +25,13 @@ def login():
         password = st.text_input("Password", type="password")
         
         if st.form_submit_button("Login"):
-            if ch.check_credentials(username, password):
+            if st.session_state.ch.check_credentials(username, password):
                 st.session_state.logged_in = True                
             st.rerun()
 
 def logout():
     st.session_state.logged_in = False
+    st.session_state.authentication_status = None
     st.rerun()
 
 logout_page = st.Page(logout, title="Logout", icon="🔓")
