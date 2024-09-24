@@ -1,17 +1,17 @@
-# Description: This module contains functions to extract events from ICS-URLs and create a timeline widget for Streamlit.
+"""
+Description: This module contains functions to extract events from ICS-URLs and create a timeline widget for Streamlit.
+
+"""
 
 # Imported Moduls:
 import streamlit as st # For Streamlit-Caching
-import requests # For HTTP-Requests
-import pytz # For Timezone-Handling
 import pandas as pd # For Data-Handling
-
-from ics import Calendar # For ICS-Handling
 from datetime import datetime # For Date-Handling
-from jinja2 import Template # For HTML-Template-Rendering
 
 # imported functions
 from time import sleep # For time delays (stabilizing due to network issues)
+from custom_moduls.streamlit_timeline import st_timeline # For the timeline widget
+from custom_moduls.calender_widget.helper_functions import get_calender_from_url, extract_calender_events # For the helper functions
 
 # Three main functions: get_timeline_options, get_groups_from_members_df, get_tamam_member_calender_events
 
@@ -22,20 +22,18 @@ def get_timeline_options(**kwargs) -> dict:
     - max: The maximum date for the timeline
     - min: The minimum date for the timeline
     - locale: The locale for the timeline
+    - height: The height of the timeline
 
     The options can be customized by passing keyword arguments.
     The following keyword arguments are supported:
     - months_ahead: The number of months ahead for the maximum date
+    - months_behind: The number of months behind for the minimum date
+    - height: The height of the timeline
     ... and more to come
     
     '''
-
-    # Get current date and define time range for the timeline
-    current_date = f"{datetime.now().isoformat()}"
-
-    if "months_ahead" in kwargs: # Number of months ahead
+    def months_ahead(months_ahead: int) -> str:
         # Convert months to number of years and months (e.g. 13 months -> 1 year and 1 month)
-        months_ahead = int(kwargs["months_ahead"])
         year_ahead = months_ahead // 12
         months_ahead = months_ahead % 12
         # Calculate the maximum date
@@ -44,19 +42,50 @@ def get_timeline_options(**kwargs) -> dict:
             replace_month = replace_month % 12
             year_ahead += 1
         replace_year = datetime.now().year + year_ahead
-        max_date = f"{datetime.now().replace(year=replace_year, month=replace_month).isoformat()}"
+        return f"{datetime.now().replace(year=replace_year, month=replace_month).isoformat()}"
+    
+    def months_behind(months_behind: int) -> str:
+        # Convert months to number of years and months (e.g. 13 months -> 1 year and 1 month)
+        year_behind = months_behind // 12
+        months_behind = months_behind % 12
+        # Calculate the minimum date
+        replace_month = datetime.now().month - months_behind
+        if replace_month < 1:
+            replace_month = 12 + replace_month
+            year_behind += 1
+        replace_year = datetime.now().year - year_behind
+        return f"{datetime.now().replace(year=replace_year, month=replace_month).isoformat()}"
+    
+    def update_options(options: dict, **kwargs) -> dict:
+        for key, value in kwargs.items():
+            if key == "months_ahead" or key == "months_behind":
+                continue
+            if key not in options:
+                options[key] = value
+        return options
+
+    if "months_ahead" in kwargs: 
+        max_date = months_ahead(int(kwargs["months_ahead"]))
     else:
-        max_date = f"{datetime.now().replace(year=datetime.now().year+1).isoformat()}"     
+        max_date = f"{datetime.now().replace(year=datetime.now().year+1).isoformat()}"
+
+    if "months_behind" in kwargs:
+        min_date = months_behind(int(kwargs["months_behind"]))
+    else:
+        min_date = f"{datetime.now().isoformat()}"
         
     options = {
         'max': max_date,
-        'min': current_date,
+        'min': min_date,
         'locale': 'de',
     }
+
+    options = update_options(options, **kwargs)
+        
     return options
 
 @st.cache_data(ttl=3600) # Cache for 1 hour
-def get_groups_from_members_df(members_df: pd.DataFrame) -> list[dict]:
+def get_groups_from_members_df() -> list[dict]:
     '''
     Returns a list of dictionaries with the group information for the timeline widget.
     The group information is:
@@ -67,6 +96,8 @@ def get_groups_from_members_df(members_df: pd.DataFrame) -> list[dict]:
     The group information is extracted from the members dataframe.
     
     '''
+
+    members_df: pd.DataFrame = st.session_state.ch.members_df
 
     groups = []
     for name in members_df["Name"].values:
@@ -79,7 +110,7 @@ def get_groups_from_members_df(members_df: pd.DataFrame) -> list[dict]:
     return groups
 
 @st.cache_data(ttl=3600) # Cache for 1 hour
-def get_tamam_member_calender_events(members_df: pd.DataFrame) -> list[dict]:
+def get_tamam_member_calender_events() -> list[dict]:
     '''
     Returns a list of dictionaries with the event information for the timeline widget.
     The event information is:
@@ -95,130 +126,32 @@ def get_tamam_member_calender_events(members_df: pd.DataFrame) -> list[dict]:
 
     '''
 
+    members_df: pd.DataFrame = st.session_state.ch.members_df
+
     events = []
     for name, url in members_df[["Name", "ICS_URL"]].values:
         cal = get_calender_from_url(url)
         if cal is None:
             continue
-        events.extend(_extract_calender_events(name, cal))
+        events.extend(extract_calender_events(name, cal))
+    
     return events
 
-
-# -- Helper functions --
-
-def get_calender_from_url(url: str) -> Calendar:
-    '''
-    Returns a Calendar object from the given URL.
-    The URL should be a string.
-    If the URL is not a string, the function returns None.
-    If the URL is not valid, the function raises an exception.
-    If the URL is valid, the function returns a Calendar object.
-
-    '''
-
-    if not isinstance(url, str):
-        return None
-    
-    ics_response = requests.get(url)
-    ics_response.raise_for_status()
-
-    for attempts in range(3):        
-
-        try:
-            cal = Calendar(ics_response.text)
-        except Exception as e:
-            print(f"Error: {e}")
-            sleep(0.5)
-            continue
-    return cal
-
-def _get_name_html(member: str, event_name: str) -> str:
-    with open("custom_moduls/calender_widget/name_template.html", "r") as f:
-        template = Template(f.read())
-    return template.render(member=member, event_name=event_name)
-
-def _get_title_html(event_name: str, member: str, start: str, end: str, location: str, des: str) -> str:
-    with open("custom_moduls/calender_widget/title_template.html", "r") as f:
-        template = Template(f.read())
-
-    start_date, start_time = start.split("T")
-    _, end_time = end.split("T")
-
-    weekday = datetime.fromisoformat(start).strftime("%A")
-    start_date = f"{weekday}, {start_date}"
-
-    if des and len(des) > 25:
-        des = des[:25] + "..."
-
-    return template.render(
-        event_name=event_name,
-        member=member,
-        start_date=start_date,
-        start_time=start_time[:5],
-        end_time=end_time[:5],
-        location=location or "No Location",
-        description=des or "No Description",
-        )
-
-def _extract_calender_events(member: str, cal: Calendar) -> list[dict]:
-    '''
-    Returns a list of dictionaries with the event information for the timeline widget.
-    The event information is:
-    - id: The id of the event
-    - content: The content of the event
-    - start: The start date and time of the event
-    - end: The end date and time of the event
-    - group: The group of the event
-    - title: The title of the event
-    - style: The style of the event
-    
-    The event information is extracted from the calendar object.
+def timeline(
+        options: dict,
+        items: list[dict] = get_tamam_member_calender_events(),
+        groups: list[dict] = get_groups_from_members_df(),) -> None:
     
     '''
+    Displays a timeline widget in Streamlit.
+    The timeline widget shows the events for the given items and groups.
+    The timeline widget is customized with the given options and height.
 
-    local_tz = pytz.timezone('Europe/Berlin')
+    '''
 
-    events = []
-    for i, event in enumerate(cal.events):
+    st_timeline(
+        items=items,
+        groups=groups,
+        options=options,
+    )
 
-        # Skip events that are already over
-        if event.end.astimezone(local_tz).date() < datetime.now().date():
-            continue
-
-        # Skip events that are generated by Reclaim.ai
-        if event.description and "Reclaim" in event.description:
-            continue
-
-        
-        # Shift time by 2 hours -> GMT+2
-        event.end = event.end.astimezone(local_tz)
-        event.begin = event.begin.astimezone(local_tz)     
-
-        # Convert Arrow-Objects in ISO 8601-Strings
-        start = event.begin.isoformat()
-        end = event.end.isoformat()
-
-        # Create HTML-Content und Title
-        content = _get_name_html(member, event.name)
-        title = _get_title_html(event.name, member, start, end, event.location, event.description)
-
-        # Set Style
-        style = ""
-
-        if event.description:
-            if event.description == "Tamam":
-                style += "border-color: gold; background-color: gold;"
-        else:
-            style += "border-color: grey; background-color: grey;"
-        
-        # Append Event-dict to List
-        events.append({
-            'id': f"{member}_{i}",
-            'content': content,
-            'start': start,
-            'end': end,
-            'group': member.split(' ')[0],
-            'title': title,
-            'style': style,
-        })
-    return events
