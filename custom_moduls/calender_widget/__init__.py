@@ -11,7 +11,11 @@ from datetime import datetime # For Date-Handling
 # imported functions
 from time import sleep # For time delays (stabilizing due to network issues)
 from custom_moduls.streamlit_timeline import st_timeline # For the timeline widget
-from custom_moduls.calender_widget.helper_functions import get_calender_from_url, extract_calender_events # For the helper functions
+from custom_moduls.calender_widget.helper_functions import (
+    get_calender_from_url,
+    extract_calender_events,
+    months_ahead,
+    months_behind,)
 
 # Three main functions: get_timeline_options, get_groups_from_members_df, get_tamam_member_calender_events
 
@@ -32,29 +36,6 @@ def get_timeline_options(**kwargs) -> dict:
     ... and more to come
     
     '''
-    def months_ahead(months_ahead: int) -> str:
-        # Convert months to number of years and months (e.g. 13 months -> 1 year and 1 month)
-        year_ahead = months_ahead // 12
-        months_ahead = months_ahead % 12
-        # Calculate the maximum date
-        replace_month = datetime.now().month + months_ahead
-        if replace_month > 12:
-            replace_month = replace_month % 12
-            year_ahead += 1
-        replace_year = datetime.now().year + year_ahead
-        return f"{datetime.now().replace(year=replace_year, month=replace_month).isoformat()}"
-    
-    def months_behind(months_behind: int) -> str:
-        # Convert months to number of years and months (e.g. 13 months -> 1 year and 1 month)
-        year_behind = months_behind // 12
-        months_behind = months_behind % 12
-        # Calculate the minimum date
-        replace_month = datetime.now().month - months_behind
-        if replace_month < 1:
-            replace_month = 12 + replace_month
-            year_behind += 1
-        replace_year = datetime.now().year - year_behind
-        return f"{datetime.now().replace(year=replace_year, month=replace_month).isoformat()}"
     
     def update_options(options: dict, **kwargs) -> dict:
         for key, value in kwargs.items():
@@ -140,12 +121,14 @@ def get_tamam_member_calender_events() -> list[dict]:
 def timeline(
         options: dict,
         items: list[dict] = get_tamam_member_calender_events(),
-        groups: list[dict] = get_groups_from_members_df(),) -> None:
-    
+        groups: list[dict] = get_groups_from_members_df(),
+        ) -> None:    
     '''
     Displays a timeline widget in Streamlit.
-    The timeline widget shows the events for the given items and groups.
-    The timeline widget is customized with the given options and height.
+    Args:
+        options: A dictionary with the options for the timeline widget
+        items: A list of dictionaries with the event information for the timeline widget
+        groups: A list of dictionaries with the group information for the timeline widget
 
     '''
 

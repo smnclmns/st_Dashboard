@@ -125,3 +125,33 @@ def extract_calender_events(member: str, cal: Calendar) -> list[dict]:
             'style': style,
         })
     return events
+
+def months_ahead(months_ahead: int) -> str:
+    '''
+    Returns the date of the current date plus the given number of months.
+    '''
+    # Convert months to number of years and months (e.g. 13 months -> 1 year and 1 month)
+    year_ahead = months_ahead // 12
+    months_ahead = months_ahead % 12
+    # Calculate the maximum date
+    replace_month = datetime.now().month + months_ahead
+    if replace_month > 12:
+        replace_month = replace_month % 12
+        year_ahead += 1
+    replace_year = datetime.now().year + year_ahead
+    return f"{datetime.now().replace(year=replace_year, month=replace_month).isoformat()}"
+
+def months_behind(months_behind: int) -> str:
+    '''
+    Returns the date of the current date minus the given number of months.
+    '''
+    # Convert months to number of years and months (e.g. 13 months -> 1 year and 1 month)
+    year_behind = months_behind // 12
+    months_behind = months_behind % 12
+    # Calculate the minimum date
+    replace_month = datetime.now().month - months_behind
+    if replace_month < 1:
+        replace_month = 12 + replace_month
+        year_behind += 1
+    replace_year = datetime.now().year - year_behind
+    return f"{datetime.now().replace(year=replace_year, month=replace_month).isoformat()}"
