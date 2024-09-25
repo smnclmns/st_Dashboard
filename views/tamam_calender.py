@@ -1,6 +1,6 @@
 import streamlit as st
 
-import modules.calender_widget as cw
+import services.calender_widget as cw
 
 st.write("This is the calender page.")
 
