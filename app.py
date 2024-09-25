@@ -1,5 +1,5 @@
 import streamlit as st
-from services.Connection_handling import Connection_Handler
+from services.connection_handling import Connection_Handler
 
 st.set_page_config(
     page_title="TamamTisch",
