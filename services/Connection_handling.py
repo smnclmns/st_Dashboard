@@ -4,7 +4,7 @@
 # Imported Moduls:
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
-import streamlit_authenticator as stauth
+from streamlit_authenticator.utilities.hasher import Hasher
 import pandas as pd
 
 # Connection_Handler class
@@ -35,4 +35,20 @@ class Connection_Handler():
                 "name": self.members_df[self.members_df["Username"] == username]["Name"].values[0],
                 "password": self.members_df[self.members_df["Username"] == username]["Passwort"].values[0]
             }
-        return dict(usernames=_insidecredentials)
+        return _insidecredentials
+    
+    def check_credentials(self, username: str, password: str) -> bool:
+        '''
+        Checks if the given username and password are correct.
+        '''
+        if username in self.credentials:
+            if Hasher.check_pw(password, self.credentials[username]["password"]):
+                st.session_state["name"] = self.credentials[username]["name"]
+                st.session_state["authentication_status"] = True
+                return True
+            else:
+                st.session_state["authentication_status"] = False
+        else:
+             st.session_state["authentication_status"] = False
+
+        return False
