@@ -10,8 +10,8 @@ from datetime import datetime # For Date-Handling
 
 # imported functions
 from time import sleep # For time delays (stabilizing due to network issues)
-from custom_moduls.streamlit_timeline import st_timeline # For the timeline widget
-from custom_moduls.calender_widget.helper_functions import (
+from modules.streamlit_timeline import st_timeline # For the timeline widget
+from modules.calender_widget.helper_functions import (
     get_calender_from_url,
     extract_calender_events,
     months_ahead,
