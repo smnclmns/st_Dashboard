@@ -85,7 +85,6 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-quick_scripts.ipynb
 
 # IPython
 profile_default/
