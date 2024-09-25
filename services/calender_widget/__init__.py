@@ -9,6 +9,7 @@ import pandas as pd # For Data-Handling
 from datetime import datetime # For Date-Handling
 import os # For File-Handling
 import streamlit.components.v1 as components # For Streamlit-Components
+import json # For JSON-Handling
 
 # imported functions
 from time import sleep # For time delays (stabilizing due to network issues)
@@ -143,6 +144,8 @@ def timeline(
         "st_timeline", path=build_path)
     
     component_value = component_func(
-        items=items, groups=groups, options=options)
+        items=json.dumps(items),
+        groups=json.dumps(groups),
+        options=json.dumps(options))
     
     return None

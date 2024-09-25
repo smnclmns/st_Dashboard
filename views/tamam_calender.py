@@ -9,4 +9,5 @@ st.write("This is the calender page.")
 
 cw.timeline(options=cw.get_timeline_options(
     height="500px",
-))
+    )
+)
