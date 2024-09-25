@@ -7,10 +7,12 @@ Description: This module contains functions to extract events from ICS-URLs and 
 import streamlit as st # For Streamlit-Caching
 import pandas as pd # For Data-Handling
 from datetime import datetime # For Date-Handling
+import os # For File-Handling
+import streamlit.components.v1 as components # For Streamlit-Components
 
 # imported functions
 from time import sleep # For time delays (stabilizing due to network issues)
-from services.calender_widget.streamlit_timeline import st_timeline # For the timeline widget
+
 from services.calender_widget.helper_functions import (
     get_calender_from_url,
     extract_calender_events,
@@ -135,9 +137,12 @@ def timeline(
 
     '''
 
-    st_timeline(
-        items=items,
-        groups=groups,
-        options=options,
-    )
+    build_path = os.path.join(os.getcwd(), "static", "builds", "calender_build")
 
+    component_func = components.declare_component(
+        "st_timeline", path=build_path)
+    
+    component_value = component_func(
+        items=items, groups=groups, options=options)
+    
+    return None
