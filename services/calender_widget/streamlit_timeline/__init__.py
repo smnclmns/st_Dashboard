@@ -45,27 +45,6 @@ def st_timeline(
     # "default" is a special argument that specifies the initial return
     # value of the component before the user has interacted with it.
 
-    if options is None:
-        options = {
-            "width": width,
-            "height": height,
-            "stack": False,
-            "showMajorLabels": True,
-            "showCurrentTime": True,
-            "zoomMin": 1000000,
-            "type": "background",
-            "format": {"minorLabels": {"minute": "h:mma", "hour": "ha"}},
-            "groupEditable": True,
-            "editable": {
-                "add": True,  # add new items by double tapping
-                "updateTime": True,  # drag items horizontally
-                "updateGroup": True,  # drag items from one group to another
-                "remove": True,  # delete an item by tapping the delete button top right
-                "overrideItems": False,  # allow these options to override item.editable
-            },
-            "selectable": True,
-        }
-
     if not isinstance(options, dict):
         raise TypeError("options must be a dictionary")
 
@@ -73,9 +52,6 @@ def st_timeline(
         options["width"] = width
     if "height" not in options:
         options["height"] = height
-
-    if groups is None:
-        groups = []
 
     for index, item in enumerate(items):
         if "id" not in item:

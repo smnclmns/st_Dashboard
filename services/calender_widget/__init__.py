@@ -27,6 +27,7 @@ def get_timeline_options(**kwargs) -> dict:
     - min: The minimum date for the timeline
     - locale: The locale for the timeline
     - height: The height of the timeline
+    - stack: Selects if the events are getting stacked in the timeline
 
     The options can be customized by passing keyword arguments.
     The following keyword arguments are supported:
@@ -59,6 +60,8 @@ def get_timeline_options(**kwargs) -> dict:
         'max': max_date,
         'min': min_date,
         'locale': 'de',
+        "stack": False,
+        "type": "background",
     }
 
     options = update_options(options, **kwargs)
@@ -119,7 +122,7 @@ def get_tamam_member_calender_events() -> list[dict]:
     return events
 
 def timeline(
-        options: dict,
+        options: dict = None,
         items: list[dict] = get_tamam_member_calender_events(),
         groups: list[dict] = get_groups_from_members_df(),
         ) -> None:    
