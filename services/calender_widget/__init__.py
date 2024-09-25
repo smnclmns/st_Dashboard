@@ -10,7 +10,7 @@ from datetime import datetime # For Date-Handling
 
 # imported functions
 from time import sleep # For time delays (stabilizing due to network issues)
-from streamlit_timeline import st_timeline # For the timeline widget
+from services.calender_widget.streamlit_timeline import st_timeline # For the timeline widget
 from services.calender_widget.helper_functions import (
     get_calender_from_url,
     extract_calender_events,

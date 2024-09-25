@@ -5,7 +5,7 @@ from jinja2 import Template
 from time import sleep
 from datetime import datetime
 import pytz
-
+import os
 
 # -- Helper functions --
 
@@ -36,12 +36,16 @@ def get_calender_from_url(url: str) -> Calendar:
     return cal
 
 def _get_name_html(member: str, event_name: str) -> str:
-    with open("custom_moduls/calender_widget/name_template.html", "r") as f:
+
+    template_path = os.path.join(os.path.dirname(__file__), "name_template.html")
+    print(f"name_template Path: {template_path}")
+    with open(template_path, "r") as f:
         template = Template(f.read())
     return template.render(member=member, event_name=event_name)
 
 def _get_title_html(event_name: str, member: str, start: str, end: str, location: str, des: str) -> str:
-    with open("custom_moduls/calender_widget/title_template.html", "r") as f:
+    template_path = os.path.join(os.path.dirname(__file__), "title_template.html")
+    with open(template_path, "r") as f:
         template = Template(f.read())
 
     start_date, start_time = start.split("T")
