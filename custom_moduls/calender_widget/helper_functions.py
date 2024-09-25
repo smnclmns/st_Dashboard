@@ -130,8 +130,6 @@ def months_ahead(months_ahead: int) -> str:
     '''
     Returns the date of the current date plus the given number of months.
     '''
-
-    a = 1/months_ahead
     
     # Convert months to number of years and months (e.g. 13 months -> 1 year and 1 month)
     year_ahead = months_ahead // 12
