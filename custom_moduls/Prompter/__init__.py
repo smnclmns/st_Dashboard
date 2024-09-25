@@ -56,3 +56,21 @@ def get_prompt(cwd_contents: str, files: list[str], file_contents: list[str], ex
     prompt += f"Error:\n`{exception_msg}`"
 
     return prompt
+
+def write_prompt_in_txt_file() -> None:
+
+    cwd_contents = list_cwd_contents()
+    exception_message = traceback.format_exc()
+
+    files = find_files_in_exception(exception_message)
+    file_contents = get_file_contents(filepaths=files)
+
+    prompt = get_prompt(
+        cwd_contents=cwd_contents,
+        files=files,
+        file_contents=file_contents,
+        exception_msg=exception_message
+    )
+
+    with open("prompt.txt", "w") as f:
+        f.write(prompt)
